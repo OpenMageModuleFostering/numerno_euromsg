@@ -1,0 +1,950 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Numerno - Euro.message Magento Extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the NUMERNO EUROMESSAGE MAGENTO EXTENSION License, which extends the Open Software
+ * License (OSL 3.0). The Euro.message Magento Extension License is available at this URL:
+ * http://numerno.com/licenses/euromsg-ce.txt The Open Software License is available at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * DISCLAIMER
+ *
+ * By adding to, editing, or in any way modifying this code, Numerno is not held liable for any inconsistencies or
+ * abnormalities in the behaviour of this code. By adding to, editing, or in any way modifying this code, the Licensee
+ * terminates any agreement of support offered by Numerno, outlined in the provided Euro.message Magento Extension
+ * License.
+ * Upon discovery of modified code in the process of support, the Licensee is still held accountable for any and all
+ * billable time Numerno spent during the support process. Numerno does not guarantee compatibility with any other
+ * Magento extension. Numerno is not responsbile for any inconsistencies or abnormalities in the behaviour of this
+ * code if caused by other Magento extension.
+ * If you did not receive a copy of the license, please send an email to info@numerno.com or call +90-212-223-5093,
+ * so we can send you a copy immediately.
+ *
+ * @category   [Numerno]
+ * @package    [Numerno_Euromsg]
+ * @copyright  Copyright (c) 2015 Numerno Bilisim Hiz. Tic. Ltd. Sti. (http://numerno.com/)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+-->
+<config>
+    <tabs>
+        <euromsg_tab translate="label" module="euromsg">
+            <label><![CDATA[<div style="position: absolute;"><img id="euromsg-logo" src="" alt="" border="0" /></div>&nbsp;<script>
+            var skin_dir_pos = SKIN_URL.indexOf("adminhtml");
+            var skin_dir = SKIN_URL.substring(0, skin_dir_pos);
+            $('euromsg-logo').src = skin_dir + "adminhtml/default/default/images/euromsg/euromsg_logo.png";
+            </script>]]></label>
+            <sort_order>400</sort_order>
+        </euromsg_tab>
+    </tabs>
+    <sections>
+        <euromsg translate="label" module="euromsg">
+            <label>General</label>
+            <tab>euromsg_tab</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>10</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <groups>
+                <general module="euromsg" translate="label comment">
+                    <label>General Settings</label>
+                    <expanded>true</expanded>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <comment><![CDATA[<div style='height: 20px;margin-bottom:10px;'> <img style='float:left;' src='http://numerno.com/media/modules/euromsg-logo.png' /></div> Configure your euro.message platform connection below. If you have any questions or would like any help please visit <a href='http://numerno.com' target='_blank'>numerno.com</a>.]]></comment>
+                    <fields>
+                        <platform translate="label">
+                            <label>euro.message Platform</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>euromsg/system_config_source_platform</source_model>
+                            <sort_order>10</sort_order>
+                            <comment>Choose your euro.message platform.</comment>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </platform>
+                        <lang_id translate="label comment">
+                            <label>Data Warehouse Language</label>
+                            <comment><![CDATA[If you are using MAX platform, there must be LANG_ID column in the data files.]]></comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>euromsg/system_config_source_dwh_langId</source_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><platform>max</platform></depends>
+                        </lang_id>
+                        <ws_user translate="label">
+                            <label>Web Service Username</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </ws_user>
+                        <ws_pass translate="label">
+                            <label>Web Service Password</label>
+                            <frontend_type>password</frontend_type>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </ws_pass>
+                    </fields>
+                </general>
+
+                <dwh module="euromsg" translate="label comment">
+                    <label>Data Warehouse Connection</label>
+                    <expanded>true</expanded>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <comment><![CDATA[Configure Data Warehouse connection parameters for Customer and Catalog data integration.<br />]]></comment>
+                    <fields>
+                        <policy translate="label">
+                            <label>Connection Policy</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>euromsg/system_config_source_dwh_policy</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </policy>
+                        <sftp_host translate="label">
+                            <label>SFTP Host</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </sftp_host>
+                        <sftp_user translate="label">
+                            <label>SFTP Username</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </sftp_user>
+                        <sftp_pass translate="label">
+                            <label>SFTP Password</label>
+                            <frontend_type>password</frontend_type>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </sftp_pass>
+                    </fields>
+                </dwh>
+                <feedback module="euromsg" translate="label comment">
+                    <label>Data Warehouse Reporting</label>
+                    <expanded>true</expanded>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>30</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <comment>Configure directory to get feedbacks from euro.message Data Warehouse. These settings are mandatory to get unsubscribe reports.</comment>
+                    <fields>
+                        <autosync translate="label">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </autosync>
+                        <destination translate="label comment">
+                            <label>Reporting Source</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>euromsg/system_config_source_dwh_report</source_model>
+                            <comment>You can either provide SFTP account details given to euro.message IT or a local directory under your Magento installation directory.</comment>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><autosync>1</autosync></depends>
+                        </destination>
+                        <sftp_host translate="label">
+                            <label>SFTP Host</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <autosync>1</autosync>
+                                <destination>sftp</destination>
+                            </depends>
+                        </sftp_host>
+                        <sftp_user translate="label">
+                            <label>SFTP Username</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <autosync>1</autosync>
+                                <destination>sftp</destination>
+                            </depends>
+                        </sftp_user>
+                        <sftp_pass translate="label">
+                            <label>SFTP Password</label>
+                            <frontend_type>password</frontend_type>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <autosync>1</autosync>
+                                <destination>sftp</destination>
+                            </depends>
+                        </sftp_pass>
+                        <sftp_dir translate="label">
+                            <label>SFTP Directory</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <autosync>1</autosync>
+                                <destination>sftp</destination>
+                            </depends>
+                        </sftp_dir>
+                        <local_dir translate="label">
+                            <label>Local Directory</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <autosync>1</autosync>
+                                <destination>local</destination>
+                            </depends>
+                        </local_dir>
+                        <time translate="label">
+                            <label>Synchronization Time (Daily)</label>
+                            <frontend_type>time</frontend_type>
+                            <backend_model>euromsg/system_config_backend_cron</backend_model>
+                            <job>euromsg_datawarehouse_checkreports</job>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <autosync>1</autosync>
+                            </depends>
+                        </time>
+                        <delete_after translate="label">
+                            <label>Delete files after check?</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>90</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <autosync>1</autosync>
+                            </depends>
+                        </delete_after>
+                    </fields>
+                </feedback>
+            </groups>
+        </euromsg>
+        <euromsg_trx translate="label" module="euromsg">
+            <label>Transactional Emails</label>
+            <tab>euromsg_tab</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>40</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <groups>
+                <general module="euromsg" translate="label comment">
+                    <label>General Settings</label>
+                    <expanded>true</expanded>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <comment><![CDATA[<div style='height: 20px;margin-bottom:10px;'> <img style='float:left;' src='http://numerno.com/media/modules/euromsg-logo.png' /></div> Configure your euro.message platform connection below. If you have any questions or would like any help please visit <a href='http://numerno.com' target='_blank'>numerno.com</a>.]]></comment>
+                    <fields>
+                        <enabled translate="label comment">
+                            <label>Enable euro.message transactional emails</label>
+                            <comment><![CDATA[If yes, transactional emails will be pushed trough euro.message platform.]]></comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled>
+                        <from_name translate="label">
+                            <label>From Name</label>
+                            <frontend_type>text</frontend_type>
+                            <backend_model>adminhtml/system_config_backend_email_sender</backend_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends><enabled>1</enabled></depends>
+                        </from_name>
+                        <from_addr translate="label">
+                            <label>From Address</label>
+                            <frontend_type>text</frontend_type>
+                            <backend_model>adminhtml/system_config_backend_email_address</backend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends><enabled>1</enabled></depends>
+                        </from_addr>
+                        <reply_addr translate="label">
+                            <label>Reply Address</label>
+                            <frontend_type>text</frontend_type>
+                            <backend_model>adminhtml/system_config_backend_email_address</backend_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends><enabled>1</enabled></depends>
+                        </reply_addr>
+                    </fields>
+                </general>
+                <log module="euromsg" translate="label comment">
+                    <label>Email Logs</label>
+                    <expanded>true</expanded>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label">
+                            <label>Enable Logging</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled>
+                        <autosync translate="label">
+                            <label>Clean Logs</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <enabled>1</enabled>
+                            </depends>
+                        </autosync>
+                        <keeplogs>
+                            <label>Keep Logs For, Days</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>25</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <enabled>1</enabled>
+                                <autosync>1</autosync>
+                            </depends>
+                        </keeplogs>
+                        <frequency translate="label">
+                            <label>Log Cleaning Frequency</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>euromsg/system_config_source_cron_frequency</source_model>
+                            <backend_model>euromsg/system_config_backend_cron</backend_model>
+                            <job>euromsg_email_log_cleanup</job>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <enabled>1</enabled>
+                                <autosync>1</autosync>
+                            </depends>
+                        </frequency>
+                        <time translate="label">
+                            <label>Log Cleaning Start Time</label>
+                            <frontend_type>time</frontend_type>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <enabled>1</enabled>
+                                <autosync>1</autosync>
+                                <frequency separator=",">D,W,M</frequency>
+                            </depends>
+                        </time>
+                        <hour translate="label">
+                            <label>Log Cleaning Interval</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>euromsg/system_config_source_cron_hours</source_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <enabled>1</enabled>
+                                <autosync>1</autosync>
+                                <frequency>H</frequency>
+                            </depends>
+                        </hour>
+                        <track_delivery translate="label">
+                            <label>Track Delivery Reports</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends>
+                                <enabled>1</enabled>
+                            </depends>
+                        </track_delivery>
+                    </fields>
+                </log>
+            </groups>
+        </euromsg_trx>
+        <euromsg_sms translate="label" module="euromsg">
+            <label><![CDATA[Transactional SMS]]></label>
+            <tab>euromsg_tab</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>50</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <groups>
+                <general module="euromsg" translate="label comment">
+                    <label>General Settings</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled>
+                        <originator translate="label">
+                            <label>Sender Name (Originator)</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><enabled>1</enabled></depends>
+                        </originator>
+                        <method translate="label comment">
+                            <label>Method</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>euromsg/system_config_source_sms_method</source_model>
+                            <comment>WARNING: Consult with euro.message staff before changing sending method.</comment>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><enabled>1</enabled></depends>
+                        </method>
+                        <attribute translate="label comment">
+                            <label>Customer Attribute</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>euromsg/system_config_source_customer_attributes</source_model>
+                            <backend_model>euromsg/system_config_backend_attributes</backend_model>
+                            <comment>Customer attribute that includes gsm number.</comment>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><enabled>1</enabled></depends>
+                        </attribute>
+                    </fields>
+                </general>
+                <log module="euromsg" translate="label comment">
+                    <label>Logging and Reports</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label">
+                            <label>Enable SMS Log</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled>
+                        <log_days translate="label">
+                            <label>Save Log, Days</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><enabled>1</enabled></depends>
+                        </log_days>
+                        <track_delivery translate="label">
+                            <label>Track Delivery Reports</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><enabled>1</enabled></depends>
+                        </track_delivery>
+                    </fields>
+                </log>
+                <template module="euromsg" translate="label comment">
+                    <label>SMS Templates</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>30</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <comment>You can edit SMS templates using variables commented for each template.</comment>
+                    <fields>
+                        <footer translate="label">
+                            <label>SMS Suffix</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </footer>
+                        <sms_new_order>
+                            <label>Notify on New Order</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </sms_new_order>
+                        <sms_new_order_template>
+                            <label>New Order Template</label>
+                            <frontend_type>textarea</frontend_type>
+                            <comment>{{var order.increment_id}} {{var order.customer_firstname}} {{var order.customer_lastname}} {{var order.customer_email}} {{var order.grand_total}} {{var customer.email}} {{var suffix}}</comment>
+                            <sort_order>25</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><sms_new_order>1</sms_new_order></depends>
+                        </sms_new_order_template>
+                        <sms_order_update>
+                            <label>Notify on Order Update</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </sms_order_update>
+                        <sms_order_update_template>
+                            <label>Order Udpate Template</label>
+                            <frontend_type>textarea</frontend_type>
+                            <comment>{{var comment}} {{var order.increment_id}} {{var order.customer_firstname}} {{var order.customer_lastname}} {{var order.customer_email}} {{var order.grand_total}} {{var customer.email}} {{var suffix}</comment>
+                            <sort_order>35</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><sms_order_update>1</sms_order_update></depends>
+                        </sms_order_update_template>
+                        <sms_new_invoice>
+                            <label>Notify on New Invoice</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </sms_new_invoice>
+                        <sms_new_invoice_template>
+                            <label>New Invoice Template</label>
+                            <frontend_type>textarea</frontend_type>
+                            <comment>{{var invoice.increment_id}} {{var order.increment_id}} {{var order.customer_firstname}} {{var order.customer_lastname}} {{var order.customer_email}} {{var order.grand_total}} {{var customer.email}} {{var suffix}}</comment>
+                            <sort_order>45</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><sms_new_invoice>1</sms_new_invoice></depends>
+                        </sms_new_invoice_template>
+                        <sms_new_shipment>
+                            <label>Notify on New Shipment</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </sms_new_shipment>
+                        <sms_new_shipment_template>
+                            <label>New Shipment Template</label>
+                            <frontend_type>textarea</frontend_type>
+                            <comment>{{var shipment.increment_id}} {{var order.increment_id}} {{var order.customer_firstname}} {{var order.customer_lastname}} {{var order.customer_email}} {{var order.grand_total}} {{var customer.email}} {{var suffix}}</comment>
+                            <sort_order>55</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><sms_new_shipment>1</sms_new_shipment></depends>
+                        </sms_new_shipment_template>
+                        <sms_new_track>
+                            <label>Notify on New Shipment Tracking Number</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </sms_new_track>
+                        <sms_new_track_template>
+                            <label>New Shipment Tracking Number Template</label>
+                            <frontend_type>textarea</frontend_type>
+                            <comment>{{var track.track_number}} {{var shipment.increment_id}} {{var order.increment_id}} {{var order.customer_firstname}} {{var order.customer_lastname}} {{var order.customer_email}} {{var order.grand_total}} {{var customer.email}} {{var suffix}}</comment>
+                            <sort_order>65</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><sms_new_track>1</sms_new_track></depends>
+                        </sms_new_track_template>
+                        <sms_new_creditmemo>
+                            <label>Notify on New Credit Memo</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </sms_new_creditmemo>
+                        <sms_new_creditmemo_template>
+                            <label>New Credit Memo Template</label>
+                            <frontend_type>textarea</frontend_type>
+                            <comment>{{var creditmemo.increment_id}} {{var order.increment_id}} {{var order.customer_firstname}} {{var order.customer_lastname}} {{var order.customer_email}} {{var order.grand_total}} {{var customer.email}} {{var suffix}}</comment>
+                            <sort_order>75</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><sms_new_creditmemo>1</sms_new_creditmemo></depends>
+                        </sms_new_creditmemo_template>
+                    </fields>
+                </template>
+            </groups>
+        </euromsg_sms>
+        <euromsg_customer translate="label" module="euromsg">
+            <label>Customer Data Integration</label>
+            <tab>euromsg_tab</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>20</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <groups>
+                <general module="euromsg" translate="label comment">
+                    <label>General Settings</label>
+                    <expanded>true</expanded>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <comment><![CDATA[<div style='height: 20px;margin-bottom:10px;'> <img style='float:left;' src='http://numerno.com/media/modules/euromsg-logo.png' /></div> Configure your customer data synchronization preferences below. If you have any questions or would like any help please visit <a href='http://numerno.com' target='_blank'>numerno.com</a>.]]></comment>
+                    <fields>
+                        <source translate="label">
+                            <label>Use Data From</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>euromsg/system_config_source_customer_dataSource</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </source>
+                        <use_unsubscribed translate="label">
+                            <label>Use Unsubscribed Data</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </use_unsubscribed>
+                        <notify translate="label">
+                            <label>Send Notification Emails to</label>
+                            <frontend_type>text</frontend_type>
+                            <backend_model>adminhtml/system_config_backend_email_address</backend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </notify>
+                        <filename translate="label comment">
+                            <label>Data Warehouse Table Name</label>
+                            <comment>Default euro.message Data Warehouse Table Name for synchronization.</comment>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </filename>
+                        <sync_now translate="label comment">
+                            <label>Synchronize Now</label>
+                            <comment>Form will be saved after synchronization.</comment>
+                            <frontend_type>button</frontend_type>
+                            <frontend_model>euromsg/adminhtml_form_field_syncNow</frontend_model>
+                            <synchronize>member</synchronize>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </sync_now>
+                        <autosync translate="label">
+                            <label>Synchronization Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </autosync>
+                        <frequency translate="label">
+                            <label>Synchronization Frequency</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>euromsg/system_config_source_cron_frequency</source_model>
+                            <backend_model>euromsg/system_config_backend_cron</backend_model>
+                            <job>euromsg_autosync_customers</job>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <autosync>1</autosync>
+                            </depends>
+                        </frequency>
+                        <time translate="label">
+                            <label>Synchronization Start Time</label>
+                            <frontend_type>time</frontend_type>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <autosync>1</autosync>
+                                <frequency separator=",">D,W,M</frequency>
+                            </depends>
+                        </time>
+                        <hour translate="label">
+                            <label>Synchronization Interval</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>euromsg/system_config_source_cron_hours</source_model>
+                            <sort_order>90</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <autosync>1</autosync>
+                                <frequency>H</frequency>
+                            </depends>
+                        </hour>
+                        <attributes translate="label">
+                            <label>Attributes</label>
+                            <frontend_model>euromsg/adminhtml_form_field_customerAttributes</frontend_model>
+                            <backend_model>euromsg/system_config_backend_attributes</backend_model>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </attributes>
+                    </fields>
+                </general>
+            </groups>
+        </euromsg_customer>
+        <euromsg_catalog translate="label" module="euromsg">
+            <label>Catalog Data Integration</label>
+            <tab>euromsg_tab</tab>
+            <sort_order>30</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <groups>
+                <general module="euromsg" translate="label comment">
+                    <label>General Settings</label>
+                    <expanded>true</expanded>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <comment><![CDATA[<div style='height: 20px;margin-bottom:10px;'> <img style='float:left;' src='http://numerno.com/media/modules/euromsg-logo.png' /></div> Configure your catalog data synchronization preferences below. If you have any questions or would like any help please visit <a href='http://numerno.com' target='_blank'>numerno.com</a>.]]></comment>
+                    <fields>
+                        <export translate="label">
+                            <label>Export Only Visible Products</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </export>
+                        <notify translate="label">
+                            <label>Send Notification Emails to</label>
+                            <frontend_type>text</frontend_type>
+                            <backend_model>adminhtml/system_config_backend_email_address</backend_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </notify>
+                        <filename translate="label comment">
+                            <label>Data Warehouse Table Name</label>
+                            <comment>euro.message default is PRODUCTS. Change only if requested by euro.message</comment>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </filename>
+                        <sync_now translate="label comment">
+                            <label>Synchronize Now</label>
+                            <comment>Form will be saved after synchronization.</comment>
+                            <frontend_type>button</frontend_type>
+                            <frontend_model>euromsg/adminhtml_form_field_syncNow</frontend_model>
+                            <synchronize>product</synchronize>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </sync_now>
+                        <autosync translate="label">
+                            <label>Synchronization Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </autosync>
+                        <frequency translate="label">
+                            <label>Synchronization Frequency</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>euromsg/system_config_source_cron_frequency</source_model>
+                            <backend_model>euromsg/system_config_backend_cron</backend_model>
+                            <job>euromsg_autosync_catalog</job>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <autosync>1</autosync>
+                            </depends>
+                        </frequency>
+                        <time translate="label">
+                            <label>Synchronization Start Time</label>
+                            <frontend_type>time</frontend_type>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <autosync>1</autosync>
+                                <frequency separator=",">D,W,M</frequency>
+                            </depends>
+                        </time>
+                        <hour translate="label">
+                            <label>Synchronization Interval</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>euromsg/system_config_source_cron_hours</source_model>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <autosync>1</autosync>
+                                <frequency>H</frequency>
+                            </depends>
+                        </hour>
+                        <attributes translate="label">
+                            <label>Attributes</label>
+                            <frontend_model>euromsg/adminhtml_form_field_attributes</frontend_model>
+                            <backend_model>euromsg/system_config_backend_attributes</backend_model>
+                            <sort_order>90</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </attributes>
+                    </fields>
+                </general>
+                <advanced module="euromsg" translate="label comment">
+                    <label>Advanced Settings</label>
+                    <expanded>false</expanded>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>30</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <comment>These values will be used to calculate how many products to load per export iteration.</comment>
+                    <fields>
+                        <memory_limit translate="label comment">
+                            <label>Default Memory Limit</label>
+                            <frontend_type>text</frontend_type>
+                            <comment><![CDATA[If <i>ini_get('memory_limit')</i> doesn't retrieve memory limit, this will be used as default]]></comment>
+                            <sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </memory_limit>
+                        <memory_pp translate="label comment">
+                            <label>Memory Per Product</label>
+                            <frontend_type>text</frontend_type>
+                            <comment>One product to have up to such size of memory</comment>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </memory_pp>
+                        <memory_percent translate="label comment">
+                            <label>Memory Usage Percent (%)</label>
+                            <frontend_type>text</frontend_type>
+                            <comment>Calculated memory usage percent to be used per export iteration. Any value higher than 80 will be ignored to have supply</comment>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </memory_percent>
+                        <minimum_products translate="label comment">
+                            <label>Minimum Products Limit</label>
+                            <frontend_type>text</frontend_type>
+                            <comment>Minimum product count limit will be overriden with this value if a lower value calculated</comment>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </minimum_products>
+                    </fields>
+                </advanced>
+            </groups>
+        </euromsg_catalog>
+    </sections>
+</config>

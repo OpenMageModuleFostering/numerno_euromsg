@@ -1,0 +1,79 @@
+<?php
+/**
+ * Numerno - Euro.message Magento Extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the NUMERNO EUROMESSAGE MAGENTO EXTENSION License, which extends the Open Software
+ * License (OSL 3.0). The Euro.message Magento Extension License is available at this URL:
+ * http://numerno.com/licenses/euromsg-ce.txt The Open Software License is available at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * DISCLAIMER
+ *
+ * By adding to, editing, or in any way modifying this code, Numerno is not held liable for any inconsistencies or
+ * abnormalities in the behaviour of this code. By adding to, editing, or in any way modifying this code, the Licensee
+ * terminates any agreement of support offered by Numerno, outlined in the provided Euro.message Magento Extension
+ * License.
+ * Upon discovery of modified code in the process of support, the Licensee is still held accountable for any and all
+ * billable time Numerno spent during the support process. Numerno does not guarantee compatibility with any other
+ * Magento extension. Numerno is not responsbile for any inconsistencies or abnormalities in the behaviour of this
+ * code if caused by other Magento extension.
+ * If you did not receive a copy of the license, please send an email to info@numerno.com or call +90-212-223-5093,
+ * so we can send you a copy immediately.
+ *
+ * @category   [Numerno]
+ * @package    [Numerno_Euromsg]
+ * @copyright  Copyright (c) 2015 Numerno Bilisim Hiz. Tic. Ltd. Sti. (http://numerno.com/)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+
+/**
+ * Grid Export Action JavaScript
+ *
+ * @category   Numerno
+ * @package    Numerno_Euromsg
+ * @author     Numerno Bilisim Hiz. Tic. Ltd. Sti. <info@numerno.com>
+ */
+?>
+<?php /* @var $this Numerno_Euromsg_Block_Adminhtml_Customer_Grid_ExportJs */ ?>
+<script type="text/javascript">
+    function doExport() {
+
+        var select = $(<?php echo $this->getObjectName() ?>.containerId + '_export');
+        var selectedOption = select.options[select.selectedIndex].innerHTML;
+        if(selectedOption == 'euro.message') {
+
+            var filename = prompt('<?php echo Mage::helper('euromsg')->__('Please enter Data Warehouse Table Name')?>');
+
+            if(filename.length == 0) {
+                alert('<?php echo Mage::helper('euromsg')->__('Data Warehouse name is mandatory.'); ?>');
+            } else if(/^[A-Za-z][A-Za-z_0-9]{1,254}$/.test(filename) == false){
+                alert('<?php echo Mage::helper('euromsg')->__('Please use only letters (a-z), numbers (0-9) or '
+                    . 'underscore(_) in this field, first character should be a letter.'); ?>');
+            } else if(<?php echo $this->getObjectName() ?>.massaction
+                && <?php echo $this->getObjectName() ?>.massaction.checkedString) {
+
+                new Ajax.Request(select.value, {
+                    method:     'post',
+                    parameters: <?php echo $this->getObjectName() ?>.massaction.formFieldNameInternal + '='
+                        + <?php echo $this->getObjectName() ?>.massaction.checkedString + '&dwhname=' + filename,
+                    onSuccess: function(transport){
+                        window.location.reload();
+                    }
+                });
+            } else {
+                new Ajax.Request(select.value, {
+                    method:     'post',
+                    parameters: 'dwhname=' + filename,
+                    onSuccess: function(transport){
+                        window.location.reload();
+                    }
+                });
+            }
+        } else {
+            <?php echo $this->getObjectName() ?>.doExport();
+        }
+
+    }
+</script>

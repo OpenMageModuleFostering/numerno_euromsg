@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Numerno - Euro.message Magento Extension
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the NUMERNO EUROMESSAGE MAGENTO EXTENSION License, which extends the Open Software
+ * License (OSL 3.0). The Euro.message Magento Extension License is available at this URL:
+ * http://numerno.com/licenses/euromsg-ce.txt The Open Software License is available at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * DISCLAIMER
+ *
+ * By adding to, editing, or in any way modifying this code, Numerno is not held liable for any inconsistencies or
+ * abnormalities in the behaviour of this code. By adding to, editing, or in any way modifying this code, the Licensee
+ * terminates any agreement of support offered by Numerno, outlined in the provided Euro.message Magento Extension
+ * License.
+ * Upon discovery of modified code in the process of support, the Licensee is still held accountable for any and all
+ * billable time Numerno spent during the support process. Numerno does not guarantee compatibility with any other
+ * Magento extension. Numerno is not responsbile for any inconsistencies or abnormalities in the behaviour of this
+ * code if caused by other Magento extension.
+ * If you did not receive a copy of the license, please send an email to info@numerno.com or call +90-212-223-5093,
+ * so we can send you a copy immediately.
+ *
+ * @category   [Numerno]
+ * @package    [Numerno_Euromsg]
+ * @copyright  Copyright (c) 2015 Numerno Bilisim Hiz. Tic. Ltd. Sti. (http://numerno.com/)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+-->
+<config>
+    <menu>
+        <euromessage translate="title" module="euromsg">
+            <title>euro.message</title>
+            <sort_order>61</sort_order>
+            <action>euromsg/euromsg/index</action>
+            <children>
+                <trx translate="title" module="euromsg">
+                    <title>Transactional Emails</title>
+                    <children>
+                        <logs translate="title" module="euromsg">
+                            <title>Email Logs</title>
+                            <action>euromsg/newsletter/logs</action>
+                            <sort_order>10</sort_order>
+                        </logs>
+                        <settings translate="title" module="euromsg">
+                            <title>Settings</title>
+                            <action>adminhtml/system_config/edit/section/euromsg_trx</action>
+                            <sort_order>20</sort_order>
+                        </settings>
+                    </children>
+                </trx>
+                <sms translate="title" module="euromsg">
+                    <title>SMS</title>
+                    <action>euromsg/sms/index</action>
+                    <children>
+                        <logs translate="title" module="euromsg">
+                            <title>SMS Logs</title>
+                            <action>euromsg/sms/logs</action>
+                            <sort_order>10</sort_order>
+                        </logs>
+                        <subscribers translate="title" module="euromsg">
+                            <title>SMS Subscribers</title>
+                            <action>euromsg/sms/subscribers</action>
+                            <sort_order>20</sort_order>
+                        </subscribers>
+                        <settings translate="title" module="euromsg">
+                            <title>Settings</title>
+                            <action>adminhtml/system_config/edit/section/euromsg_sms</action>
+                            <sort_order>30</sort_order>
+                        </settings>
+                    </children>
+                </sms>
+            </children>
+        </euromessage>
+    </menu>
+    <acl>
+        <resources>
+            <admin>
+                <children>
+                    <system>
+                        <children>
+                            <config>
+                                <children>
+                                    <euromsg translate="title">
+                                        <title>Euromsg General</title>
+                                        <sort_order>100</sort_order>
+                                    </euromsg>
+                                    <euromsg_trx translate="title">
+                                        <title>Euromsg Transactional Emails</title>
+                                        <sort_order>200</sort_order>
+                                    </euromsg_trx>
+                                    <euromsg_sms translate="title">
+                                        <title>Euromsg Transactional SMS</title>
+                                        <sort_order>300</sort_order>
+                                    </euromsg_sms>
+                                    <euromsg_customer translate="title">
+                                        <title>Euromsg Customer Data Integration</title>
+                                        <sort_order>400</sort_order>
+                                    </euromsg_customer>
+                                    <euromsg_catalog translate="title">
+                                        <title>Euromsg Catalog Data Integration</title>
+                                        <sort_order>500</sort_order>
+                                    </euromsg_catalog>
+                                </children>
+                            </config>
+                        </children>
+                    </system>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+</config>
