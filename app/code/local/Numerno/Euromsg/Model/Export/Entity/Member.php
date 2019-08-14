@@ -1,31 +1,34 @@
 <?php
 /**
- * Numerno - Euro.message Magento Extension
+ * euro.message Personalized Omni-channel Marketing Automation
  *
  * NOTICE OF LICENSE
  *
- * This source file is subject to the NUMERNO EUROMESSAGE MAGENTO EXTENSION License, which extends the Open Software
- * License (OSL 3.0). The Euro.message Magento Extension License is available at this URL:
- * http://numerno.com/licenses/euromsg-ce.txt The Open Software License is available at this URL:
- * http://opensource.org/licenses/osl-3.0.php
+ * This source file is subject to the "NUMERNO EUROMESSAGE MAGENTO EXTENSION License", which extends the Open Software
+ * License (OSL 3.0).
+ * The "NUMERNO EUROMESSAGE MAGENTO EXTENSION License" is available at this URL:
+ *  http://www.numerno.com/licenses/euromsg-ce.txt
+ * The Open Software License (OSL 3.0) is available at this URL:
+ *  http://opensource.org/licenses/osl-3.0.php
  *
  * DISCLAIMER
  *
  * By adding to, editing, or in any way modifying this code, Numerno is not held liable for any inconsistencies or
  * abnormalities in the behaviour of this code. By adding to, editing, or in any way modifying this code, the Licensee
- * terminates any agreement of support offered by Numerno, outlined in the provided Euro.message Magento Extension
- * License.
+ * terminates any agreement of support offered by Numerno, outlined in the provided License.
+ *
  * Upon discovery of modified code in the process of support, the Licensee is still held accountable for any and all
  * billable time Numerno spent during the support process. Numerno does not guarantee compatibility with any other
  * Magento extension. Numerno is not responsbile for any inconsistencies or abnormalities in the behaviour of this
  * code if caused by other Magento extension.
+ *
  * If you did not receive a copy of the license, please send an email to info@numerno.com or call +90-212-223-5093,
  * so we can send you a copy immediately.
  *
  * @category   [Numerno]
  * @package    [Numerno_Euromsg]
- * @copyright  Copyright (c) 2015 Numerno Bilisim Hiz. Tic. Ltd. Sti. (http://numerno.com/)
- * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @copyright  Copyright (c) 2016 Numerno Bilisim Hiz. Tic. Ltd. Sti. (http://www.numerno.com/)
+ * @license    http://numerno.com/licenses/euromsg-ce.txt NUMERNO EUROMESSAGE MAGENTO EXTENSION License
  */
 
 /**
@@ -40,10 +43,11 @@ class Numerno_Euromsg_Model_Export_Entity_Member extends Mage_Core_Model_Abstrac
     /**
      * Permanent column names.
      */
-    const COL_EMAIL_PERMIT  = 'EMAIL_PERMIT_STATUS';
-    const COL_GSM_PERMIT    = 'GSM_PERMIT_STATUS';
+    const COL_STATUS        = 'STATUS';
     const COL_EMAIL         = 'EMAIL';
-    const COL_KEY_ID        = 'KEY_ID';
+    const COL_EMAIL_PERMIT  = 'EMAIL_PERMIT_DATA';
+    const COL_GSM_NO        = 'GSM_NO';
+    const COL_GSM_PERMIT    = 'GSM_PERMIT_DATA';
 
     /**
      * Customer ID or Subscriber ID filter cache
@@ -60,7 +64,7 @@ class Numerno_Euromsg_Model_Export_Entity_Member extends Mage_Core_Model_Abstrac
     protected $_attrCodes = array();
 
     /**
-     * Attribute code to its column names.
+     * Attribute code to its column name.
      *
      * @var array
      */
@@ -152,7 +156,7 @@ class Numerno_Euromsg_Model_Export_Entity_Member extends Mage_Core_Model_Abstrac
                 . (isset($attribute['datatype']) ? '[' . $attribute['datatype'] . ']' : '');
             $this->_attrCodes[] = $attribute['attribute'];
 
-            if(!in_array($attribute['attribute'], $this->getPresetAttributes()) ) {
+            if (!in_array($attribute['attribute'], $this->getPresetAttributes()) ) {
                 if (substr($attribute['attribute'], 0, strlen($_prefix)) == $_prefix) {
                     $this->_customerAttrCodes[] = substr($attribute['attribute'], strlen($_prefix));
                 }
@@ -169,7 +173,7 @@ class Numerno_Euromsg_Model_Export_Entity_Member extends Mage_Core_Model_Abstrac
      */
     protected function getAttributeCollection()
     {
-        $exportAttributes = Mage::getStoreConfig('euromsg_customer/general/attributes');
+        $exportAttributes = $this->_helper->getConfigData('general/attributes', 'customer');
         if (!is_array($exportAttributes)) {
             $exportAttributes = empty($exportAttributes) ? array() : unserialize($exportAttributes);
         }
@@ -181,80 +185,25 @@ class Numerno_Euromsg_Model_Export_Entity_Member extends Mage_Core_Model_Abstrac
         );
 
         $codes   = array();
-        foreach($exportAttributes as $exportAttribute) {
-            if(isset($exportAttribute['attribute']))
+        foreach ($exportAttributes as $exportAttribute) {
+            if (isset($exportAttribute['attribute'])) {
                 if (substr($exportAttribute['attribute'], 0, strlen($_prefix)) == $_prefix) {
                     $codes[] = substr($exportAttribute['attribute'], strlen($_prefix));
                 }
                 $codes[] = $exportAttribute['attribute'];
-        }
-
-        $dataTypes = array(
-            'entity_id'               => 'int',
-            'subscriber_id'           => 'int',
-            'subscriber_email'        => null,
-            $_prefix . 'last_login'   => 'datetime',
-            $_prefix . 'last_order'   => 'datetime',
-            $_prefix . 'orders_total' => 'float',
-            $_prefix . 'fav_category' => 'string(255)',
-            $_prefix . 'group'        => 'string(32)'
-        );
-
-        $staticColumns = $this->_connection->describeTable($this->_resource->getTableName('customer/entity'));
-        foreach($staticColumns as $columnName => $column) {
-            $dataType = $column['DATA_TYPE'];
-            if(in_array($dataType, array('char', 'text')) || strpos($dataType, 'char')
-                || strpos($dataType, 'text')){
-                $length = $column['LENGTH'];
-                if(is_null($length) || $length > 255) {
-                    $dataTypes[$_prefix . $columnName] = 'string(1024)';
-                }else{
-                    $dataTypes[$_prefix . $columnName] = "string($length)";
-                }
-            }elseif(in_array($dataType, array('int', 'bit', 'blob', 'binary')) || strpos($dataType, 'int')
-                || strpos($dataType, 'binary') || strpos($dataType, 'blob'))
-                $dataTypes[$_prefix . $columnName] = 'int';
-            elseif(in_array($dataType, array('float', 'double', 'decimal')) )
-                $dataTypes[$_prefix . $columnName] = 'float';
-            elseif(in_array($dataType, array('date', 'time', 'year', 'datetime', 'timestamp')) )
-                $dataTypes[$_prefix . $columnName] = 'datetime';
-        }
-
-        $attributes = Mage::getModel('customer/entity_attribute_collection')
-            ->setCodeFilter($codes);
-        foreach($attributes as $attribute) {
-            $backendType = $attribute->getBackendType();
-
-            switch($backendType) {
-                case 'varchar':
-                    $dataTypes[$_prefix . $attribute->getAttributeCode()] = 'string(255)';
-                    break;
-                case 'text':
-                    $dataTypes[$_prefix . $attribute->getAttributeCode()] = 'string(1024)';
-                    break;
-                case 'int':
-                    if($attribute->getFrontendInput() == 'select' || $attribute->getFrontendInput() == 'multiselect')
-                        $dataTypes[$_prefix . $attribute->getAttributeCode()] = 'string(255)';
-                    else
-                        $dataTypes[$_prefix . $attribute->getAttributeCode()] = 'int';
-                    break;
-                case 'decimal':
-                    $dataTypes[$_prefix . $attribute->getAttributeCode()] = 'float';
-                    break;
-                case 'datetime':
-                    $dataTypes[$_prefix . $attribute->getAttributeCode()] = 'datetime';
-                    break;
             }
         }
 
-        foreach($exportAttributes as $key => $exportAttribute) {
-            if(isset($dataTypes[$exportAttribute['attribute']])) {
+        $dataTypes = Mage::helper('euromsg')->getCustomerEntityDataTypes($codes);
+
+        foreach ($exportAttributes as $key => $exportAttribute) {
+            if (isset($dataTypes[$exportAttribute['attribute']])) {
                 $exportAttributes[$key]['datatype'] = $dataTypes[$exportAttribute['attribute']];
             }
         }
 
-        $sms = Mage::helper('euromsg/sms');
-        if($sms->isEnabled() && in_array($sms->getGsmAttribute(), $codes) ){
+        if ($this->_helper->getConfigData('general/enabled', 'sms')
+            && in_array($this->_helper->getConfigData('general/attribute', 'sms'), $codes) ) {
             $gsmPermitAttributeCode = $_prefix . Numerno_Euromsg_Model_Sms::SMS_PERMIT_ATTRIBUTE_CODE;
             $exportAttributes[$gsmPermitAttributeCode] = array(
                 'attribute' => $gsmPermitAttributeCode,
@@ -273,23 +222,25 @@ class Numerno_Euromsg_Model_Export_Entity_Member extends Mage_Core_Model_Abstrac
     protected function getPresetAttributes()
     {
         $presetAttributes = $this->_helper->getPresetCustomerAttributes();
-        unset($presetAttributes['NULL']);
+        unset($presetAttributes['__empty']);
 
         return array_keys($presetAttributes);
     }
 
-    protected function _prepareCollection(){
-
+    protected function _prepareCollection()
+    {
         $_subscriberCollection = Mage::getResourceModel('newsletter/subscriber_collection')
             ->showCustomerInfo($this->_customerAttrCodes);
 
-        if(!$this->useUnsubscribed())
+        if (!$this->useUnsubscribed()) {
             $_subscriberCollection->useOnlySubscribed();
+        }
 
-        if(Mage::getStoreConfig('euromsg_customer/general/source') == 'newsletter_subscribers_customers')
+        if ($this->_helper->getConfigData('general/source', 'customer') == 'newsletter_subscribers_customers') {
             $_subscriberCollection->useOnlyCustomers();
+        }
 
-        foreach($this->_filter as $column => $ids) {
+        foreach ($this->_filter as $column => $ids) {
             $_subscriberCollection->addFieldToFilter('main_table.' . $column, array('in' => $ids));
         }
 
@@ -305,6 +256,7 @@ class Numerno_Euromsg_Model_Export_Entity_Member extends Mage_Core_Model_Abstrac
     protected function _prepareLastLogins($customerIds)
     {
         if (empty($customerIds) || !in_array('customer_last_login', $this->_attrCodes)) {
+
             return array();
         }
 
@@ -325,6 +277,7 @@ class Numerno_Euromsg_Model_Export_Entity_Member extends Mage_Core_Model_Abstrac
     protected function _prepareLastOrders($customerIds)
     {
         if (empty($customerIds) || !in_array('customer_last_order', $this->_attrCodes)) {
+
             return array();
         }
 
@@ -345,6 +298,7 @@ class Numerno_Euromsg_Model_Export_Entity_Member extends Mage_Core_Model_Abstrac
     protected function _prepareOrdersTotal($customerIds)
     {
         if (empty($customerIds) || !in_array('customer_orders_total', $this->_attrCodes)) {
+
             return array();
         }
 
@@ -366,6 +320,7 @@ class Numerno_Euromsg_Model_Export_Entity_Member extends Mage_Core_Model_Abstrac
     protected function _prepareMostOrderedCategories($customerIds)
     {
         if (empty($customerIds) || !in_array('customer_fav_category', $this->_attrCodes)) {
+
             return array();
         }
 
@@ -385,7 +340,6 @@ class Numerno_Euromsg_Model_Export_Entity_Member extends Mage_Core_Model_Abstrac
             ->group('customer_id');
 
         $mostOrderedCategories = $this->_connection->fetchPairs($query);
-
         $this->_categoryIdToName = Mage::getSingleton('catalog/category')->getCollection()
             ->addNameToResult()
             ->addIdFilter($mostOrderedCategories)
@@ -403,11 +357,11 @@ class Numerno_Euromsg_Model_Export_Entity_Member extends Mage_Core_Model_Abstrac
     protected function _preparePresetAttributesData($_customerIds)
     {
         if (empty($_customerIds)) {
+
             return array();
         }
 
         $presetData = array();
-
         try {
             $presetData['customer_last_login'] = $this->_prepareLastLogins($_customerIds);
         } catch (Exception $e) {
@@ -460,7 +414,6 @@ class Numerno_Euromsg_Model_Export_Entity_Member extends Mage_Core_Model_Abstrac
      */
     public function setFilename($filename)
     {
-
         $destination = tempnam(sys_get_temp_dir(), $filename . '.' . $this->_writer->getFileExtension());
 
         $this->_wrap[$filename . '.' . $this->_writer->getFileExtension()] = $destination;
@@ -485,9 +438,9 @@ class Numerno_Euromsg_Model_Export_Entity_Member extends Mage_Core_Model_Abstrac
      *
      * @return bool
      */
-    public function useUnsubscribed(){
-
-       return Mage::getStoreConfig('euromsg_customer/general/use_unsubscribed');
+    public function useUnsubscribed()
+    {
+       return $this->_helper->getConfigData('general/use_unsubscribed', 'customer');
     }
 
     /**
@@ -497,10 +450,10 @@ class Numerno_Euromsg_Model_Export_Entity_Member extends Mage_Core_Model_Abstrac
      */
     public function export()
     {
-        $colNames            = $this->_attributeColumnNames;
-        $collection          = $this->_prepareCollection();
+        $colNames   = $this->_attributeColumnNames;
+        $collection = $this->_prepareCollection();
 
-        if($collection->count()) {
+        if ($collection->count()) {
             $customerIds         = $collection->getColumnValues('customer_id');
             $presetAttributeData = $this->_preparePresetAttributesData($customerIds);
             $categoryNames       = $this->_categoryIdToName;
@@ -515,17 +468,18 @@ class Numerno_Euromsg_Model_Export_Entity_Member extends Mage_Core_Model_Abstrac
                     array('email_permit' => $row->isSubscribed() ? 'Y' : 'N')
                 );
 
-                if(in_array($this->_helper->getCustomerAttributePrefix() . 'entity_id', $this->_attrCodes) )
+                if (in_array($this->_helper->getCustomerAttributePrefix() . 'entity_id', $this->_attrCodes) )
                     $row->addData(
                         array($this->_helper->getCustomerAttributePrefix() . 'entity_id' => $row->getCustomerId())
                     );
 
-                if($row->getCustomerId()) {
+                if ($row->getCustomerId()) {
+
                     $presetAttributes = array_intersect_key(array_flip($this->_attrCodes), $presetAttributeData);
-                    foreach($presetAttributes as $presetAttribute => $null) {
+                    foreach ($presetAttributes as $presetAttribute => $null) {
 
                         $value = $presetAttributeData[$presetAttribute][$row->getCustomerId()];
-                        if($presetAttribute == 'customer_fav_category') {
+                        if ($presetAttribute == 'customer_fav_category') {
                             $row->addData(
                                 array($presetAttribute => $categoryNames[$value]['name'])
                             );
@@ -538,18 +492,18 @@ class Numerno_Euromsg_Model_Export_Entity_Member extends Mage_Core_Model_Abstrac
                 }
 
                 $rowData = array_intersect_key($row->getData(), array_flip($this->_attrCodes));
-                foreach($rowData as $attrCode => $value) {
+                foreach ($rowData as $attrCode => $value) {
                     $value = str_ireplace($this->_writer->getDelimiter(), '', $value);
 
-                    if(is_numeric($value)) {
+                    if (is_numeric($value)) {
                         $value = round($value, 2);
                     }
 
-                    if(Zend_Date::isDate($value, Zend_Date::ISO_8601)) {
+                    if (Zend_Date::isDate($value, Zend_Date::ISO_8601)) {
                         $value = date("Y-m-d", strtotime($value));
                     }
 
-                    if($attrCode == $this->_helper->getCustomerAttributePrefix() .
+                    if ($attrCode == $this->_helper->getCustomerAttributePrefix() .
                         Numerno_Euromsg_Model_Sms::SMS_PERMIT_ATTRIBUTE_CODE) {
                         $value = $value ? 'Y' : 'N';
                     }
@@ -558,21 +512,20 @@ class Numerno_Euromsg_Model_Export_Entity_Member extends Mage_Core_Model_Abstrac
                     unset($rowData[$attrCode]);
                 }
 
-                try{
+                try {
                     $this->_writer->writeRow($rowData);
-                }
-                catch(Exception $e) {
+                } catch(Exception $e) {
                     Mage::logException($e);
                 }
 
             }
 
-            $notification = Mage::getStoreConfig('euromsg_customer/general/notify');
-
-            if($notification) {
+            $notification = $this->_helper->getConfigData('general/notify', 'customer');
+            if ($notification) {
                 $destination = tempnam(sys_get_temp_dir(),$this->getFilename() . '.xml');
                 $this->_wrap[$this->getFilename() . '.xml'] = $destination;
                 $xml = Mage::helper('core')->assocToXml(array('NOTIFICATION_EMAIL' => $notification), 'euro.message');
+
                 file_put_contents($destination, explode("\n", $xml->asXML(), 2)[1]);
             }
 
@@ -581,7 +534,5 @@ class Numerno_Euromsg_Model_Export_Entity_Member extends Mage_Core_Model_Abstrac
         } else {
             Mage::throwException($this->_helper->__('There is no member data to export.'));
         }
-
-
     }
 }

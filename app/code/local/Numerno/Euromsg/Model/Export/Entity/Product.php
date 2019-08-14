@@ -1,31 +1,34 @@
 <?php
 /**
- * Numerno - Euro.message Magento Extension
+ * euro.message Personalized Omni-channel Marketing Automation
  *
  * NOTICE OF LICENSE
  *
- * This source file is subject to the NUMERNO EUROMESSAGE MAGENTO EXTENSION License, which extends the Open Software
- * License (OSL 3.0). The Euro.message Magento Extension License is available at this URL:
- * http://numerno.com/licenses/euromsg-ce.txt The Open Software License is available at this URL:
- * http://opensource.org/licenses/osl-3.0.php
+ * This source file is subject to the "NUMERNO EUROMESSAGE MAGENTO EXTENSION License", which extends the Open Software
+ * License (OSL 3.0).
+ * The "NUMERNO EUROMESSAGE MAGENTO EXTENSION License" is available at this URL:
+ *  http://www.numerno.com/licenses/euromsg-ce.txt
+ * The Open Software License (OSL 3.0) is available at this URL:
+ *  http://opensource.org/licenses/osl-3.0.php
  *
  * DISCLAIMER
  *
  * By adding to, editing, or in any way modifying this code, Numerno is not held liable for any inconsistencies or
  * abnormalities in the behaviour of this code. By adding to, editing, or in any way modifying this code, the Licensee
- * terminates any agreement of support offered by Numerno, outlined in the provided Euro.message Magento Extension
- * License.
+ * terminates any agreement of support offered by Numerno, outlined in the provided License.
+ *
  * Upon discovery of modified code in the process of support, the Licensee is still held accountable for any and all
  * billable time Numerno spent during the support process. Numerno does not guarantee compatibility with any other
  * Magento extension. Numerno is not responsbile for any inconsistencies or abnormalities in the behaviour of this
  * code if caused by other Magento extension.
+ *
  * If you did not receive a copy of the license, please send an email to info@numerno.com or call +90-212-223-5093,
  * so we can send you a copy immediately.
  *
  * @category   [Numerno]
  * @package    [Numerno_Euromsg]
- * @copyright  Copyright (c) 2015 Numerno Bilisim Hiz. Tic. Ltd. Sti. (http://numerno.com/)
- * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @copyright  Copyright (c) 2016 Numerno Bilisim Hiz. Tic. Ltd. Sti. (http://www.numerno.com/)
+ * @license    http://numerno.com/licenses/euromsg-ce.txt NUMERNO EUROMESSAGE MAGENTO EXTENSION License
  */
 
 /**
@@ -75,44 +78,9 @@ class Numerno_Euromsg_Model_Export_Entity_Product extends Mage_ImportExport_Mode
      */
     protected function _getExportAttributes()
     {
-
-        $exportAttributes = Mage::getStoreConfig('euromsg_catalog/general/attributes');
+        $exportAttributes = Mage::helper('euromsg')->getConfigData('general/attributes', 'catalog');
         if (!is_array($exportAttributes)) {
             $exportAttributes = empty($exportAttributes) ? array() : unserialize($exportAttributes);
-        }
-
-
-        $dataTypes = array(
-            'entity_id'     => 'int',
-            '_url'          => 'string(1024)',
-            '_attribute_set'=> 'string(255)',
-            '_type'         => 'string(255)',
-            'qty'           => 'float',
-            'is_in_stock'   => 'int',
-            '_root_category'=> 'string(255)',
-            '_category'     => 'string(1024)'
-        );
-
-        $staticColumns = $this->_connection->describeTable(
-            Mage::getSingleton('core/resource')->getTableName('catalog/product')
-        );
-        foreach($staticColumns as $columnName => $column) {
-            $dataType = $column['DATA_TYPE'];
-            if(in_array($dataType, array('char', 'text')) || strpos($dataType, 'char')
-                || strpos($dataType, 'text')){
-                $length = $column['LENGTH'];
-                if(is_null($length) || $length > 255) {
-                    $dataTypes[$columnName] = 'string(1024)';
-                }else{
-                    $dataTypes[$columnName] = "string($length)";
-                }
-            }elseif(in_array($dataType, array('int', 'bit', 'blob', 'binary')) || strpos($dataType, 'int')
-                || strpos($dataType, 'binary') || strpos($dataType, 'blob'))
-                $dataTypes[$columnName] = 'int';
-            elseif(in_array($dataType, array('float', 'double', 'decimal')) )
-                $dataTypes[$columnName] = 'float';
-            elseif(in_array($dataType, array('date', 'time', 'year', 'datetime', 'timestamp')) )
-                $dataTypes[$columnName] = 'datetime';
         }
 
         $codes   = array();
@@ -120,37 +88,7 @@ class Numerno_Euromsg_Model_Export_Entity_Product extends Mage_ImportExport_Mode
             $codes[] = $exportAttribute['attribute'];
         }
 
-        $attributes = Mage::getModel('eav/entity_attribute')->getCollection();
-        $attributes
-            ->setEntityTypeFilter(Mage::getSingleton('eav/config')->getEntityType('catalog_product'))
-            ->setCodeFilter($codes);
-        foreach($attributes as $attribute) {
-            $backendType = $attribute->getBackendType();
-
-            switch($backendType) {
-                case 'varchar':
-                    $dataTypes[$attribute->getAttributeCode()] = 'string(255)';
-                    break;
-                case 'text':
-                    $dataTypes[$attribute->getAttributeCode()] = 'string(1024)';
-                    break;
-                case 'int':
-                    if($attribute->getFrontendInput() == 'select' || $attribute->getFrontendInput() == 'multiselect')
-                        $dataTypes[$attribute->getAttributeCode()] = 'string(255)';
-                    else
-                        $dataTypes[$attribute->getAttributeCode()] = 'int';
-                    break;
-                case 'decimal':
-                    $dataTypes[$attribute->getAttributeCode()] = 'float';
-                    break;
-                case 'datetime':
-                    $dataTypes[$attribute->getAttributeCode()] = 'datetime';
-                    break;
-            }
-        }
-        $dataTypes['image'] = 'string(1024)';
-        $dataTypes['smallimage'] = 'string(1024)';
-        $dataTypes['thumbnail'] = 'string(1024)';
+        $dataTypes = Mage::helper('euromsg')->getProductEntityDataTypes($codes);
 
         foreach($exportAttributes as $key => $exportAttribute) {
             if(isset($dataTypes[$exportAttribute['attribute']])) {
@@ -192,10 +130,10 @@ class Numerno_Euromsg_Model_Export_Entity_Product extends Mage_ImportExport_Mode
         $attributes = $this->_getExportAttributes();
 
         $selectColumns = array('product_id');
-        if(isset($attributes['qty'])){
+        if (isset($attributes['qty'])) {
             $selectColumns[] = 'qty AS ' . $attributes['qty']['col_name'];
         }
-        if(isset($attributes['is_in_stock'])){
+        if (isset($attributes['is_in_stock'])) {
             $selectColumns[] = 'is_in_stock AS ' . $attributes['is_in_stock']['col_name'];
         }
 
@@ -209,15 +147,15 @@ class Numerno_Euromsg_Model_Export_Entity_Product extends Mage_ImportExport_Mode
             $productId = $stockItemRow['product_id'];
             unset($stockItemRow['product_id']);
 
-            if(isset($attributes['qty'])) {
-                if ($stockItemRow[$attributes['qty']['col_name']] < 0)
+            if (isset($attributes['qty'])) {
+                if ($stockItemRow[$attributes['qty']['col_name']] < 0) {
                     $stockItemRow[$attributes['qty']['col_name']] = 0;
-
+                }
                 $stockItemRow[$attributes['qty']['col_name']] *= 1;
             }
-
             $stockItemRows[$productId] = $stockItemRow;
         }
+
         return $stockItemRows;
     }
 
@@ -237,21 +175,21 @@ class Numerno_Euromsg_Model_Export_Entity_Product extends Mage_ImportExport_Mode
         }
 
         $attributes = $this->_getExportAttributes();
-
         $categoryId = array_shift($rowCategories[$productId]);
 
         if (isset($attributes[self::COL_ROOT_CATEGORY])) {
             if (isset($this->_rootCategories[$categoryId])) {
                 $dataRow[$attributes[self::COL_ROOT_CATEGORY]['col_name']] = $this->_rootCategories[$categoryId];
-            }else{
+            } else {
                 $dataRow[$attributes[self::COL_ROOT_CATEGORY]['col_name']] = '';
             }
         }
+
         if (isset($attributes[self::COL_CATEGORY])) {
             if (isset($this->_categories[$categoryId])) {
 
                 $dataRow[$attributes[self::COL_CATEGORY]['col_name']] = $this->_categories[$categoryId];
-            }else{
+            } else {
                 $dataRow[$attributes[self::COL_CATEGORY]['col_name']] = '';
             }
         }
@@ -264,15 +202,17 @@ class Numerno_Euromsg_Model_Export_Entity_Product extends Mage_ImportExport_Mode
      *
      * @return int
      */
-    public function _getLimitProducts(){
-
-        $defaultMemoryLimit = Mage::getStoreConfig('euromsg_catalog/advanced/memory_limit');
-        if(!$defaultMemoryLimit)
+    public function _getLimitProducts()
+    {
+        $helper = Mage::helper('euromsg');
+        $defaultMemoryLimit = $helper->getConfigData('advanced/memory_limit', 'catalog');
+        if (!$defaultMemoryLimit) {
             $defaultMemoryLimit = 250000000;
+        }
 
         $memoryLimit = trim(ini_get('memory_limit'));
         $lastMemoryLimitLetter = strtolower($memoryLimit[strlen($memoryLimit)-1]);
-        switch($lastMemoryLimitLetter) {
+        switch ($lastMemoryLimitLetter) {
             case 'g':
                 $memoryLimit *= 1024;
             case 'm':
@@ -286,22 +226,26 @@ class Numerno_Euromsg_Model_Export_Entity_Product extends Mage_ImportExport_Mode
         }
 
         // Tested one product to have up to such size
-        $memoryPerProduct = Mage::getStoreConfig('euromsg_catalog/advanced/memory_pp');
-        if(!$memoryPerProduct)
+        $memoryPerProduct = $helper->getConfigData('advanced/memory_pp', 'catalog');
+        if (!$memoryPerProduct) {
             $memoryPerProduct = 100000;
+        }
 
         // Decrease memory limit to have supply
-        $memoryUsagePercent =  Mage::getStoreConfig('euromsg_catalog/advanced/memory_percent') / 100;
-        if(!$memoryUsagePercent || $memoryUsagePercent > 0.9)
+        $memoryUsagePercent = $helper->getConfigData('advanced/memory_percent', 'catalog') / 100;
+        if (!$memoryUsagePercent || $memoryUsagePercent > 0.8) {
             $memoryUsagePercent = 0.8;
+        }
 
         // Minimum Products limit
-        $minProductsLimit = Mage::getStoreConfig('euromsg_catalog/advanced/minimum_products');
-        if(!$minProductsLimit)
+        $minProductsLimit = $helper->getConfigData('advanced/minimum_products', 'catalog');
+        if (!$minProductsLimit) {
             $minProductsLimit = 500;
+        }
         $limitProducts = intval(($memoryLimit  * $memoryUsagePercent - memory_get_usage(true)) / $memoryPerProduct);
-        if ($limitProducts < $minProductsLimit)
+        if ($limitProducts < $minProductsLimit) {
             $limitProducts = $minProductsLimit;
+        }
 
         return $limitProducts;
     }
@@ -314,13 +258,11 @@ class Numerno_Euromsg_Model_Export_Entity_Product extends Mage_ImportExport_Mode
      */
     protected function _prepareEntityCollection(Mage_Eav_Model_Entity_Collection_Abstract $collection)
     {
-
-        $exportOnlyVisible = Mage::getStoreConfig('euromsg_catalog/general/export');
-
+        $exportOnlyVisible = Mage::helper('euromsg')->getConfigData('general/export', 'catalog');
         $collection = parent::_prepareEntityCollection($collection);
         $collection->joinAttribute('visibility', 'catalog_product/visibility', 'entity_id', null, 'inner');
 
-        if($exportOnlyVisible) {
+        if ($exportOnlyVisible) {
             Mage::getSingleton('catalog/product_status')->addVisibleFilterToCollection($collection);
             Mage::getSingleton('catalog/product_visibility')->addVisibleInCatalogFilterToCollection($collection);
         }
@@ -369,10 +311,9 @@ class Numerno_Euromsg_Model_Export_Entity_Product extends Mage_ImportExport_Mode
         //Execution time may be very long
         set_time_limit(0);
 
-        $attributes = $this->_getExportAttributes();
+        $attributes      = $this->_getExportAttributes();
         $validAttrCodes  = $this->_getExportAttrCodes();
         $writer          = $this->getWriter();
-
         $limitProducts   = $this->_getLimitProducts();
         $offsetProducts  = 0;
 
@@ -390,22 +331,24 @@ class Numerno_Euromsg_Model_Export_Entity_Product extends Mage_ImportExport_Mode
             $collection
                 ->setPage($offsetProducts, $limitProducts);
 
-            if ($collection->getCurPage() < $offsetProducts)
+            if ($collection->getCurPage() < $offsetProducts) {
                 break;
+            }
 
             $collection->load();
-
-            if ($collection->count() == 0)
+            if ($collection->count() == 0) {
                 break;
+            }
 
             foreach ($collection as $itemId => $item) { // go through all products
 
                 foreach ($validAttrCodes as &$attrCode) { // go through all valid attribute codes
                     $attrValue = $item->getData($attrCode);
 
-                    if(Zend_Date::isDate($attrValue, Zend_Date::ISO_8601)) {
+                    if (Zend_Date::isDate($attrValue, Zend_Date::ISO_8601)) {
                         $attrValue = date("Y-m-d", strtotime($attrValue));
                     }
+
                     if (!empty($this->_attributeValues[$attrCode])) {
                         if ($this->_attributeTypes[$attrCode] == 'multiselect') {
                             $attrValue = explode(',', $attrValue);
@@ -420,42 +363,49 @@ class Numerno_Euromsg_Model_Export_Entity_Product extends Mage_ImportExport_Mode
                             $attrValue = null;
                         }
                     }
-                    if(in_array($attrCode, array('image', 'small_image', 'thumbnail'))) {
-                        $attrValue = (($attrValue == 'no_selection' || $attrValue == '') ?
-                            '' : Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_MEDIA) . 'catalog/product'
-                            . $attrValue);
+
+                    if (in_array($attrCode, array('image', 'small_image', 'thumbnail'))) {
+                        $attrValue = (
+                            ($attrValue == 'no_selection' || $attrValue == '') ?
+                                '' :
+                                Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_MEDIA) . 'catalog/product' . $attrValue
+                        );
                     }
+
                     if (is_scalar($attrValue) && isset($attributes[$attrCode])) {
                         $dataRows[$itemId][$attributes[$attrCode]['col_name']] = $attrValue;
                     }
                 }
 
                 $attrSetId = $item->getAttributeSetId();
-                if(isset($attributes[self::COL_ATTR_SET]))
+                if (isset($attributes[self::COL_ATTR_SET])) {
                     $dataRows[$itemId][$attributes[self::COL_ATTR_SET]['col_name']]
                         = $this->_attrSetIdToName[$attrSetId];
+                }
 
-                if(isset($attributes[self::COL_TYPE]))
+                if (isset($attributes[self::COL_TYPE])) {
                     $dataRows[$itemId][$attributes[self::COL_TYPE]['col_name']] = $item->getTypeId();
+                }
 
                 if(isset($attributes['_url'])) {
-                    if($item->isVisibleInCatalog() && $item->isVisibleInSiteVisibility()) {
+                    if ($item->isVisibleInCatalog() && $item->isVisibleInSiteVisibility()) {
                         $url = Zend_Uri::factory($item->getProductUrl());
                         $url->removeQueryParameters();
                         $dataRows[$itemId][$attributes['_url']['col_name']] = $url->getUri();
-                    }else{
+                    } else {
                         $dataRows[$itemId][$attributes['_url']['col_name']] = '';
                     }
                 }
 
-                if(isset($attributes['_category']) || isset($attributes['_root_category']))
+                if (isset($attributes['_category']) || isset($attributes['_root_category'])) {
                     $rowCategories[$itemId] = $item->getCategoryIds();
-
+                }
                 $item = null;
             }
             $collection->clear();
 
             if ($collection->getCurPage() < $offsetProducts) {
+
                 break;
             }
 
@@ -466,33 +416,35 @@ class Numerno_Euromsg_Model_Export_Entity_Product extends Mage_ImportExport_Mode
             }
 
             // prepare catalog inventory information
-            if(isset($attributes['qty']) || isset($attributes['is_in_stock'])) {
+            if (isset($attributes['qty']) || isset($attributes['is_in_stock'])) {
                 $productIds = array_keys($dataRows);
                 $stockItemRows = $this->_prepareCatalogInventory($productIds);
             }
 
             foreach ($dataRows as $productId => &$dataRow) {
 
-                if(isset($stockItemRows[$productId]))
+                if (isset($stockItemRows[$productId])) {
                     $dataRow += $stockItemRows[$productId];
+                }
 
-                if(isset($rowCategories[$productId]))
+                if (isset($rowCategories[$productId])) {
                     $this->_updateDataWithCategoryColumns($dataRow, $rowCategories, $productId);
+                }
 
-                if(!empty($rowMultiselects[$productId])) {
+                if (!empty($rowMultiselects[$productId])) {
                     foreach ($rowMultiselects[$productId] as $attrKey => $attrVal) {
                         if (!empty($rowMultiselects[$productId][$attrKey])) {
                             $dataRow[$attrKey] = implode(",", $attrVal);
                         }
                     }
                 }
+
                 $writer->writeRow($dataRow);
             }
         }
 
-        $notification = Mage::getStoreConfig('euromsg_catalog/general/notify');
-
-        if($notification) {
+        $notification = Mage::helper('euromsg')->getConfigData('general/notify', 'catalog');
+        if ($notification) {
             $destination = tempnam(sys_get_temp_dir(), $this->getFilename() . '.xml');
             $this->_wrap[$this->getFilename() . '.xml'] = $destination;
             $xml = Mage::helper('core')->assocToXml(array('NOTIFICATION_EMAIL' => $notification), 'euro.message');

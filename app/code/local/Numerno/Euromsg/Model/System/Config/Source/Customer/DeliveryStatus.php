@@ -32,29 +32,27 @@
  */
 
 /**
- * Attributes Backend Model
+ * Email Delivery Status
  *
  * @category   Numerno
  * @package    Numerno_Euromsg
  * @author     Numerno Bilisim Hiz. Tic. Ltd. Sti. <info@numerno.com>
  */
-class Numerno_Euromsg_Model_System_Config_Backend_Attributes
-    extends Mage_Adminhtml_Model_System_Config_Backend_Serialized_Array
+class Numerno_Euromsg_Model_System_Config_Source_Customer_DeliveryStatus
 {
-
     /**
-     * Prepare data before save
+     * Retrieve Email Delivery Status Options
+     *
+     * @return array
      */
-    protected function _beforeSave()
+    public function toArray()
     {
-        $value = $this->getValue();
-        if (is_array($value)) {
-            foreach ($value as $key => $attribute) {
-                $value[$key]['col_name'] = trim(preg_replace('/[^A-Za-z0-9_]+/i', '_', $attribute['col_name']), '_');
-            }
-        }
-        $this->setValue($value);
-
-        parent::_beforeSave();
+        return array(
+            'RE' => Mage::helper('euromsg')->__('Relayed'),
+            'HU' => Mage::helper('euromsg')->__('Undelivered (HARD)'),
+            'SU' => Mage::helper('euromsg')->__('Undelivered (SOFT)'),
+            'RD' => Mage::helper('euromsg')->__('Read')
+        );
     }
+
 }
