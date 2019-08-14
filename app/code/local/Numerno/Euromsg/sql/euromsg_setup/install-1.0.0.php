@@ -251,9 +251,9 @@ $table = $installer->getConnection()
         'nullable'  => true,
         'default'   => null,
     ), 'Delivery Message')
-    ->addIndex($installer->getIdxName('euromsg/sms_log', array('customer_id')),
+    ->addIndex($installer->getIdxName('euromsg/sms', array('customer_id')),
         array('customer_id'))
-    ->addForeignKey($installer->getFkName('euromsg/sms_log', 'customer_id', 'customer/entity', 'entity_id'),
+    ->addForeignKey($installer->getFkName('euromsg/sms', 'customer_id', 'customer/entity', 'entity_id'),
         'customer_id', $installer->getTable('customer/entity'), 'entity_id',
         Varien_Db_Ddl_Table::ACTION_SET_NULL, Varien_Db_Ddl_Table::ACTION_CASCADE)
     ->setComment('euro.message SMS Logs');

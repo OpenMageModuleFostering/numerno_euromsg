@@ -32,7 +32,7 @@
 <config>
 	<modules>
 		<Numerno_Euromsg>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</Numerno_Euromsg>
 	</modules>
     <admin>

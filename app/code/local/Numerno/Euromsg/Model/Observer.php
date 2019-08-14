@@ -326,7 +326,6 @@ class Numerno_Euromsg_Model_Observer
             try {
                 $customer     = Mage::getModel('customer/customer')->load($order->getCustomerId());
                 if($customer->getId()) {
-                    $notifySms    = Mage::helper('euromsg/sms')->getStoreConfig('template/sms_new_track');
                     $template     = Mage::helper('euromsg/sms')->getStoreConfig('template/sms_new_track_template');
                     $suffix     = Mage::helper('euromsg/sms')->getStoreConfig('template/footer');
 

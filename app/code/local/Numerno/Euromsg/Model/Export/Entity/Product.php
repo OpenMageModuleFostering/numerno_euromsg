@@ -299,7 +299,6 @@ class Numerno_Euromsg_Model_Export_Entity_Product extends Mage_ImportExport_Mode
         $minProductsLimit = Mage::getStoreConfig('euromsg_catalog/advanced/minimum_products');
         if(!$minProductsLimit)
             $minProductsLimit = 500;
-
         $limitProducts = intval(($memoryLimit  * $memoryUsagePercent - memory_get_usage(true)) / $memoryPerProduct);
         if ($limitProducts < $minProductsLimit)
             $limitProducts = $minProductsLimit;
@@ -400,14 +399,13 @@ class Numerno_Euromsg_Model_Export_Entity_Product extends Mage_ImportExport_Mode
                 break;
 
             foreach ($collection as $itemId => $item) { // go through all products
-                var_dump($item->getData());
+
                 foreach ($validAttrCodes as &$attrCode) { // go through all valid attribute codes
                     $attrValue = $item->getData($attrCode);
 
                     if(Zend_Date::isDate($attrValue, Zend_Date::ISO_8601)) {
                         $attrValue = date("Y-m-d", strtotime($attrValue));
                     }
-
                     if (!empty($this->_attributeValues[$attrCode])) {
                         if ($this->_attributeTypes[$attrCode] == 'multiselect') {
                             $attrValue = explode(',', $attrValue);
@@ -422,15 +420,14 @@ class Numerno_Euromsg_Model_Export_Entity_Product extends Mage_ImportExport_Mode
                             $attrValue = null;
                         }
                     }
-                    if(in_array($attrCode, array('image', 'small_image', 'thumbnail'))){}
+                    if(in_array($attrCode, array('image', 'small_image', 'thumbnail'))) {
                         $attrValue = (($attrValue == 'no_selection' || $attrValue == '') ?
                             '' : Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_MEDIA) . 'catalog/product'
                             . $attrValue);
-
+                    }
                     if (is_scalar($attrValue) && isset($attributes[$attrCode])) {
                         $dataRows[$itemId][$attributes[$attrCode]['col_name']] = $attrValue;
                     }
-
                 }
 
                 $attrSetId = $item->getAttributeSetId();
