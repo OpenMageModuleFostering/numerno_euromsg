@@ -1,16 +1,19 @@
 {
-    "name": "OpenMageModuleFostering/Numerno_Euromsg",
+    "name": "OpenMageModuleFostering\/Numerno_Euromsg",
     "type": "magento-module",
     "license": "NUMERNO-EUROMESSAGE-MAGENTO-EXTENSION",
     "homepage": "",
     "description": "Email and omni-channel marketing automation. ",
     "authors": [
-    {
-        "name": "Numerno",
-        "email": "muhammedv@gmail.com"
-    }
-],
+        {
+            "name": "Numerno",
+            "email": "muhammedv@gmail.com"
+        }
+    ],
     "suggest": {
-        "magento-hackathon/magento-composer-installer": "*"
-    }
+        "magento-hackathon\/magento-composer-installer": "*"
+    },
+    "keywords": [
+        "openmage-module"
+    ]
 }
